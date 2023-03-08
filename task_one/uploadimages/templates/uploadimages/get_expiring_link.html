@@ -1,0 +1,17 @@
+{% extends 'uploadimages/main.html' %}
+
+{% block content %}
+  <h2>Get Expiring Link</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    <label for="expiry_time">Expiry Time (seconds):</label>
+    <input type="number" name="expiry_time" id="expiry_time" min="300" max="30000" required>
+    <input type="submit" value="Generate Link">
+  </form>
+
+  <hr>
+
+  <h3>{{ image.original_images.name }}</h3>
+  <img src="{{ image.original_images.url }}" alt="{{ image.original_images.name }}">
+{% endblock %}
