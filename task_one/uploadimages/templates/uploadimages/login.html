@@ -1,0 +1,21 @@
+
+{% extends 'uploadimages/main.html' %}
+
+{% block content %}
+  <div style="display: flex; justify-content: center; align-items: center; height: 50vh;">
+    <form method="post" style="width: 50%; display: flex; flex-direction: column; align-items: center;">
+      {% csrf_token %}
+      <h1 style="text-align: center;">Login</h1>
+      <div style="display: flex; flex-direction: column; width: 50%;">
+        <label for="username" style="margin-bottom: 5px;">Username:</label>
+        <input type="text" id="username" name="username" required style="margin-bottom: 10px;">
+        <label for="password" style="margin-bottom: 5px;">Password:</label>
+        <input type="password" id="password" name="password" required style="margin-bottom: 20px;">
+      </div>
+      <input type="submit" value="Login" style="margin-left: auto; margin-right: auto;">
+        <p style="margin-top: 2rem;">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+
+    </form>
+
+  </div>
+{% endblock %}

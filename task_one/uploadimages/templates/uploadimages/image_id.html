@@ -1,0 +1,11 @@
+{% block content %}
+<h3>Image id</h3>
+
+<ul>
+    {% for image in images %}
+    <li>{{ image.id }}</li>
+    {% endfor %}
+</ul>
+
+
+{% endblock %}

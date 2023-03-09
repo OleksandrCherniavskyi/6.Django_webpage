@@ -1,0 +1,10 @@
+{% block content %}
+<h3>Original images</h3>
+
+<ul>
+    {% for image in images %}
+    <li><a href="{{ image.original_images.url }}">{{ image.original_images.name }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

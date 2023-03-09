@@ -1,0 +1,10 @@
+{% block content %}
+<h3>Image name</h3>
+
+<ul>
+    {% for image in images %}
+    <li>{{  image.original_images.name  }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

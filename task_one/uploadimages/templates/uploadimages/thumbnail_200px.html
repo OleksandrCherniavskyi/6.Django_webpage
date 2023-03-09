@@ -1,0 +1,12 @@
+{% block content %}
+<h5>Thumbnail 200px</h5>
+
+<ul>
+    {% for image in images %}
+    {% if image.thumbnail_200 %}
+    <li><a href="{{ image.thumbnail_200.url }}">{{ '200px' }}</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+{% endblock %}
