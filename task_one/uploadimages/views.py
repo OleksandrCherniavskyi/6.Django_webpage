@@ -1,22 +1,26 @@
 
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.core.signing import TimestampSigner
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from .models import Images
-from .forms import ImageForm, MagicLinkForm
+from .forms import ImageForm, MagicLinkForm, CreateUserForm
+from .decorators import unauthenticated_user, allowed_users, Enterprise_only
 from PIL import Image
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
+
+@login_required(login_url='login')
 
 def upload_image(request):
     if request.method == 'POST':
         form = ImageForm(request.POST, request.FILES)
         if form.is_valid():
-            image = form.save()  # save the original image
+            image = form.save(commit=False)  # save the original image
+            image.uploaded_by = request.user  # associate the image with the current user
+            image.save()
             try:
                 # create a thumbnail with 200px height
                 img = Image.open(image.original_images.path)
@@ -26,11 +30,11 @@ def upload_image(request):
                 thumbnail_width = int(thumbnail_height / ratio)
                 img.thumbnail((thumbnail_width, thumbnail_height))
                 # save the thumbnail
-                thumbnail_filename = f'{image.original_images.name.split(".")[0]}_thumbnail_200.jpg'
-                thumbnail_path = f'{settings.MEDIA_ROOT}/{thumbnail_filename}'
+                thumbnail_filename_200 = f'{image.original_images.name.split(".")[0]}_thumbnail_200.jpg'
+                thumbnail_path = f'{settings.MEDIA_ROOT}/{thumbnail_filename_200}'
                 img.save(thumbnail_path, 'JPEG')
                 # set the thumbnail_200 field in the image instance
-                image.thumbnail_200.name = thumbnail_filename
+                image.thumbnail_200.name = thumbnail_filename_200
                 image.save()
             except Exception as e:
                 print(f"Failed to create thumbnail: {str(e)}")
@@ -51,17 +55,45 @@ def upload_image(request):
                 image.save()
             except Exception as e:
                 print(f"Failed to create thumbnail: {str(e)}")
-
             return redirect('image_list')
     else:
         form = ImageForm()
-    return render(request, 'uploadimages/upload_image.html', {'form': form})
+    return render(request, 'uploadimages/upload.html', {'form': form})
 
 
 
+
+
+#@allowed_users(allowed_roles=['Enterprise'])
+#@login_required(login_url='login')
+#def original_images(request):
+#    original_images = Images.objects.filter(uploaded_by=request.user).values_list('original_images', flat=True)
+#    return render(request, 'uploadimages/original_images.html', {'original_images': original_images})
+#
+#
+#
+#@allowed_users(allowed_roles=['Enterprise'])
+#@login_required(login_url='login')
+#def thumbnail_400(request):
+#    thumbnail_400 = Images.objects.filter(uploaded_by=request.user).values_list('thumbnail_400', flat=True)
+#    return render(request, 'uploadimages/thumbnail_400px.html', {'thumbnail_400': thumbnail_400})
+#
+#
+
+ #good version
+@login_required(login_url='login')
 def image_list(request):
-    images = Images.objects.all()
+    images = Images.objects.filter(uploaded_by=request.user)
+    return render(request, 'uploadimages/image_list.html', {'images': images})
 
+
+
+
+
+@login_required(login_url='login')
+def magiclink(request):
+    last_login = request.user.last_login
+    images = Images.objects.filter(uploaded_by=request.user)
     if request.method == 'POST':
         form = MagicLinkForm(request.POST)
         if form.is_valid():
@@ -71,35 +103,40 @@ def image_list(request):
     else:
         form = MagicLinkForm(initial={'expiration_time': 3600})
 
-    return render(request, 'uploadimages/image_list.html', {'images': images, 'form': form})
-
-#def image_list(request):
-#    images = Images.objects.all()
-#    signer = TimestampSigner()
-#    if request.method == 'POST':
-#        try:
-#            expiration_time = int(request.POST['expiration_time'])
-#            if not 300 <= expiration_time <= 30000:
-#                raise ValueError()
-#        except (KeyError, ValueError):
-#            return HttpResponseBadRequest("Invalid expiration time")
-#
-#        links = []
-#        for image in images:
-#            signed_value = signer.sign(image.original_images.path)
-#            uidb64 = urlsafe_base64_encode(signed_value.encode())
-#            token = PasswordResetTokenGenerator().make_token(image)
-#            link = f"{request.scheme}://{request.get_host()}/image/{uidb64}/{token}/?expires={expiration_time}"
-#            links.append((image, link))
-#
-#        return render(request, 'uploadimages/image_list.html', {'links': links})
-#
-#    return render(request, 'uploadimages/image_list.html', {'images': images})
+    return render(request, 'uploadimages/magiclink.html', {'form': form, 'last_login': last_login})
 
 
 
-#def image_list(request):
-#    images = Images.objects.all()
-#    return render(request, 'uploadimages/image_list.html', {'images': images})
+@unauthenticated_user
+def registerPage(request):
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+
+            group = Group.objects.get(name='Basic')
+            user.groups.add(group)
+
+            return redirect('login')
+    context = {'form': form}
+    return render(request, 'uploadimages/register.html', context)
+
+@unauthenticated_user
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('image_list')
+    context = {}
+    return render(request, 'uploadimages/login.html', context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
 
 

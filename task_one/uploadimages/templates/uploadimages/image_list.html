@@ -1,70 +1,30 @@
 {% extends 'uploadimages/main.html' %}
 
 {% block content %}
-  <h2>Image List</h2>
 
-  {% if links %}
-    <h3>Links:</h3>
-    <ul>
-      {% for image, link in links %}
-        <li>{{ image }}: <a href="{{ links }}" target="_blank">{{ links }}</a></li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-  <table>
-    <thead>
+
+<table>
+  <thead>
+
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Original Image</th>
-        <th>Thumbnail (200px)</th>
-        <th>Thumbnail (400px)</th>
-        <th>Expiration time (in seconds)</th>
-        <th>Expire link</th>
+
+          <th>{% include 'uploadimages/image_id.html' %}</th>
+          <th>{% include 'uploadimages/image_name.html' %}</th>
+          <th>{% include 'uploadimages/original_images.html' %}</th>
+          <th>{% include 'uploadimages/thumbnail_200px.html' %}</th>
+          <th>{% include 'uploadimages/Thumbnail_400px.html' %}</th>
+
 
       </tr>
-    </thead>
-    <tbody>
-      {% if images %}
-        {% for image in images %}
-          <tr>
-            <td>{{ image.id }}</td>
-            <td>{{  image.original_images.name  }}</td>
-            <td><a href="{{ image.original_images.url }}">{{ 'original images' }}</a></td>
-            <td>
-              {% if image.thumbnail_200 %}
-                <a href="{{ image.thumbnail_200.url }}">{{ '200px' }}</a>
-              {% endif %}
-            </td>
-            <td>
-              {% if image.thumbnail_400 %}
-                <a href="{{ image.thumbnail_400.url }}">{{ '400px' }}</a>
-              {% endif %}
-            </td>
-            <td>
-              <form method="POST">
-                {% csrf_token %}
-              <input type="number" name="expiration_time" id="expiration_time" min="300" max="30000" required>
-            <button type="submit">Generate Links</button>
-              </form>
-            </td>
-            <td>
-              {% for image, link in links %}
+  </thead>
+</table>
+    </tbody>
 
-              {{ image.original_images.url }}: <a href="{{ image.links.url }}" target="_blank">{{ 'link' }}</a>
-              {% endfor %}
-            </td>
-            <td>
-
-            </td>
-          </tr>
-        {% endfor %}
-      {% else %}
         <tr>
           <td colspan="3">No images found.</td>
         </tr>
-      {% endif %}
+
     </tbody>
-  </table>
+
 
 {% endblock %}
