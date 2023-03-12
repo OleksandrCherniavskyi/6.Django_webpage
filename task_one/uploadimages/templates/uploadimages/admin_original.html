@@ -1,0 +1,16 @@
+{% block content %}
+
+
+{% if request.user.is_staff %}
+<h5>Original images</h5>
+
+<ul>
+    {% for image in images %}
+    <li><a href="{{ image.original_images.url }}">{{ image.original_images.name }}</a></li>
+    {% endfor %}
+</ul>
+
+
+{% endif %}
+
+{% endblock %}

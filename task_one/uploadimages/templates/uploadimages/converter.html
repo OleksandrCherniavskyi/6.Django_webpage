@@ -1,0 +1,18 @@
+{% extends 'main
+.html' %}
+
+{% block content %}
+  <h1>Generate Thumbnail</h1>
+
+  <img src="{{ image.original_images.url }}" alt="Original Image">
+
+  {% if thumbnail %}
+    <img src="{{ thumbnail.url }}" alt="Thumbnail">
+  {% endif %}
+
+  <form method="get" action=".">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Generate Thumbnail</button>
+  </form>
+{% endblock %}

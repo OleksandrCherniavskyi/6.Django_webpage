@@ -1,0 +1,27 @@
+{% extends 'uploadimages/main.html' %}
+
+
+{% block content %}
+{% if request.user.is_staff %}
+{% load static %}
+
+  <thead>
+        <link rel="stylesheet" type="text/css" href="{% static '/css/image_list.css' %}">
+
+  </thead>
+
+
+
+    <tbody>
+        <div class="image-container">
+            <div class="image-id">{% include 'uploadimages/image_id.html' %}</div>
+            <div class="image-id">{% include 'uploadimages/uploaded_by.html' %}</div>
+            <div class="image-name">{% include 'uploadimages/image_name.html' %}</div>
+            <div class="original-image">{% include 'uploadimages/admin_original.html' %}</div>
+            <div class="thumbnail-200px">{% include 'uploadimages/thumbnail_200px.html' %}</div>
+            <div class="thumbnail-400px">{% include 'uploadimages/admin_400.html' %}</div>
+        </div>
+    </tbody>
+
+{% endif %}
+{% endblock %}

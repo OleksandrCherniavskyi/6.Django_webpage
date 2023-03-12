@@ -1,19 +1,18 @@
-
-from django.shortcuts import render, redirect, get_object_or_404
+from PIL import Image
+from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
+
+from .forms import ImageForm, CreateUserForm, ThumbnailForm
 from .models import Images
-from .forms import ImageForm, MagicLinkForm, CreateUserForm
-from .decorators import unauthenticated_user, allowed_users, Enterprise_only
-from PIL import Image
+from .decorators import unauthenticated_user, staff_member_required
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 
 @login_required(login_url='login')
-
 def upload_image(request):
     if request.method == 'POST':
         form = ImageForm(request.POST, request.FILES)
@@ -61,51 +60,15 @@ def upload_image(request):
     return render(request, 'uploadimages/upload.html', {'form': form})
 
 
-
-
-
-#@allowed_users(allowed_roles=['Enterprise'])
-#@login_required(login_url='login')
-#def original_images(request):
-#    original_images = Images.objects.filter(uploaded_by=request.user).values_list('original_images', flat=True)
-#    return render(request, 'uploadimages/original_images.html', {'original_images': original_images})
-#
-#
-#
-#@allowed_users(allowed_roles=['Enterprise'])
-#@login_required(login_url='login')
-#def thumbnail_400(request):
-#    thumbnail_400 = Images.objects.filter(uploaded_by=request.user).values_list('thumbnail_400', flat=True)
-#    return render(request, 'uploadimages/thumbnail_400px.html', {'thumbnail_400': thumbnail_400})
-#
-#
-
- #good version
 @login_required(login_url='login')
 def image_list(request):
     images = Images.objects.filter(uploaded_by=request.user)
     return render(request, 'uploadimages/image_list.html', {'images': images})
 
-
-
-
-
-@login_required(login_url='login')
-def magiclink(request):
-    last_login = request.user.last_login
-    images = Images.objects.filter(uploaded_by=request.user)
-    if request.method == 'POST':
-        form = MagicLinkForm(request.POST)
-        if form.is_valid():
-            expiration_time = form.cleaned_data['expiration_time']
-            links = form.generate_links(images, request)
-            return render(request, 'uploadimages/image_list.html', {'links': links})
-    else:
-        form = MagicLinkForm(initial={'expiration_time': 3600})
-
-    return render(request, 'uploadimages/magiclink.html', {'form': form, 'last_login': last_login})
-
-
+@staff_member_required
+def view_all_images(request):
+    images = Images.objects.all()
+    return render(request, 'uploadimages/admin_list.html', {'images': images})
 
 @unauthenticated_user
 def registerPage(request):
@@ -123,6 +86,7 @@ def registerPage(request):
     context = {'form': form}
     return render(request, 'uploadimages/register.html', context)
 
+
 @unauthenticated_user
 def loginPage(request):
     if request.method == 'POST':
@@ -135,8 +99,32 @@ def loginPage(request):
     context = {}
     return render(request, 'uploadimages/login.html', context)
 
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
 
+from django.shortcuts import render, get_object_or_404
+
+#def generate_thumbnail(request,original_images ):
+#    obj = get_object_or_404(Images, original_images)
+#    return render(request, 'uploadimages/converter.html')
+
+#def generate_thumbnail(request):
+#    image = get_object_or_404(Images,pk=1)
+#    form = ThumbnailForm(request.GET or None)
+#    thumbnail = None
+#
+#    if form.is_valid():
+#        width = form.cleaned_data['width']
+#        height = form.cleaned_data['height']
+#        thumbnail = image.generate_thumbnail(image, width, height)
+#
+#    context = {
+#        'image': image,
+#        'form': form,
+#        'thumbnail': thumbnail
+#    }
+#
+#    return render(request, 'uploadimages/converter.html', context)

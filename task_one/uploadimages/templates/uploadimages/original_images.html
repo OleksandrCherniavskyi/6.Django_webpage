@@ -1,10 +1,14 @@
 {% block content %}
-<h3>Original images</h3>
+
+{% for group in request.user.groups.all %}
+{% if group.name == 'Enterprise' or group.name == 'Premium' %}
+<h5>Original images</h5>
 
 <ul>
     {% for image in images %}
     <li><a href="{{ image.original_images.url }}">{{ image.original_images.name }}</a></li>
     {% endfor %}
 </ul>
-
+{% endif %}
+{% endfor %}
 {% endblock %}

@@ -1,0 +1,18 @@
+{% block content %}
+
+
+{% if request.user.is_staff %}
+<h5>Thumbnail 400px</h5>
+
+<ul>
+    {% for image in images %}
+    {% if image.thumbnail_400 %}
+    <li><a href="{{ image.thumbnail_400.url }}">{{ '400px' }}</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+
+{% endif %}
+
+{% endblock %}

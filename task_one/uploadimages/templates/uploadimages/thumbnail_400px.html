@@ -1,5 +1,9 @@
 {% block content %}
-<h5>Thumbnail 200px</h5>
+
+{% for group in request.user.groups.all %}
+{% if  group.name == 'Enterprise' or group.name == 'Premium'  %}
+
+<h5>Thumbnail 400px</h5>
 
 <ul>
     {% for image in images %}
@@ -8,5 +12,8 @@
     {% endif %}
     {% endfor %}
 </ul>
+
+{% endif %}
+{% endfor %}
 
 {% endblock %}

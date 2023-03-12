@@ -1,0 +1,39 @@
+/* Set background color of navbar */
+.navbar {
+  background-color: #f8f9fa;
+}
+
+/* Set text color and size of navbar links */
+.navbar-nav .nav-link  {
+  color: #212529;
+  font-size: 1.2em;
+}
+
+/* Remove link underline and change hover color */
+.navbar-nav .nav-link:hover {
+  text-decoration: none;
+  color: #212529;
+  background-color: transparent;
+}
+
+/* Style the hello message container */
+.hello-msg {
+  padding-right: 3%;
+  padding-left: 3%;
+  font-size: 1.2em;
+  color: #212529;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Style the logout link */
+.hello-msg a {
+  color: #212529;
+  text-decoration: underline;
+}
+
+/* Remove underline on hover for logout link */
+.hello-msg a:hover {
+  text-decoration: none;
+}

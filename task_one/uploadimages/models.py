@@ -8,9 +8,7 @@ class Images(models.Model):
     thumbnail_200 = models.ImageField(null=True, blank=True)
     thumbnail_400 = models.ImageField(null=True, blank=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-
+    objects = models.Manager()
 
     def __str__(self):
         return self.original_images
-
-

@@ -1,29 +1,23 @@
 {% extends 'uploadimages/main.html' %}
 
 {% block content %}
+{% load static %}
 
-
-<table>
   <thead>
+        <link rel="stylesheet" type="text/css" href="{% static '/css/image_list.css' %}">
 
-      <tr>
-
-          <th>{% include 'uploadimages/image_id.html' %}</th>
-          <th>{% include 'uploadimages/image_name.html' %}</th>
-          <th>{% include 'uploadimages/original_images.html' %}</th>
-          <th>{% include 'uploadimages/thumbnail_200px.html' %}</th>
-          <th>{% include 'uploadimages/Thumbnail_400px.html' %}</th>
-
-
-      </tr>
   </thead>
-</table>
-    </tbody>
 
-        <tr>
-          <td colspan="3">No images found.</td>
-        </tr>
 
+
+    <tbody>
+        <div class="image-container">
+            <div class="image-id">{% include 'uploadimages/image_id.html' %}</div>
+            <div class="image-name">{% include 'uploadimages/image_name.html' %}</div>
+            <div class="original-image">{% include 'uploadimages/original_images.html' %}</div>
+            <div class="thumbnail-200px">{% include 'uploadimages/thumbnail_200px.html' %}</div>
+            <div class="thumbnail-400px">{% include 'uploadimages/thumbnail_400px.html' %}</div>
+        </div>
     </tbody>
 
 

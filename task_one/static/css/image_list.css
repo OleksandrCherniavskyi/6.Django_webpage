@@ -1,0 +1,11 @@
+.image-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5%; /* Optional - adds a small space between image containers */
+  padding: 5%;
+}
+
+.image-attribute {
+  margin-right: 5%; /* Optional - adds space between image attributes */
+}
